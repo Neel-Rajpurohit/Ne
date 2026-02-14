@@ -3,7 +3,8 @@ import Foundation
 @MainActor
 class CalendarService {
     nonisolated static let shared = CalendarService()
-    private let storage = DataStorageService.shared
+    
+    private var storage: DataStorageService { DataStorageService.shared }
     
     nonisolated private init() {}
     

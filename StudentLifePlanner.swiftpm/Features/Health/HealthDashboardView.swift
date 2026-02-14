@@ -18,35 +18,53 @@ struct HealthDashboardView: View {
                     .pickerStyle(.segmented)
                     .padding()
                     
-                    // Recommendation card
+                    // Recommendation card with glassmorphism
                     if let recommended = viewModel.getRecommendedExercise() {
-                        InfoCard {
-                            VStack(alignment: .leading, spacing: 8) {
+                        GlassCard {
+                            VStack(alignment: .leading, spacing: 12) {
                                 HStack {
+                                    Image(systemName: "sparkles")
+                                        .foregroundStyle(LinearGradient.accentGradient)
+                                    
                                     Text("Recommended for You")
-                                        .font(.appCaption)
-                                        .foregroundColor(.appTextSecondary)
+                                        .font(.appHeadline)
+                                        .foregroundColor(.appText)
                                     
                                     Spacer()
-                                    
-                                    Image(systemName: "sparkles")
-                                        .foregroundColor(.appAccent)
                                 }
                                 
                                 Divider()
                                 
-                                HStack {
-                                    Image(systemName: recommended.iconName)
-                                        .font(.title)
-                                        .foregroundColor(recommended.category.color)
+                                HStack(spacing: 16) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(
+                                                LinearGradient(
+                                                    colors: [recommended.category.color.opacity(0.3), recommended.category.color.opacity(0.1)],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                )
+                                            )
+                                            .frame(width: 60, height: 60)
+                                        
+                                        Image(systemName: recommended.iconName)
+                                            .font(.title)
+                                            .foregroundStyle(
+                                                LinearGradient(
+                                                    colors: [recommended.category.color, recommended.category.color.opacity(0.7)],
+                                                    startPoint: .top,
+                                                    endPoint: .bottom
+                                                )
+                                            )
+                                    }
                                     
-                                    VStack(alignment: .leading, spacing: 4) {
+                                    VStack(alignment: .leading, spacing: 6) {
                                         Text(recommended.name)
                                             .font(.appHeadline)
                                             .foregroundColor(.appText)
                                         
                                         Text(recommended.duration)
-                                            .font(.appCaption)
+                                            .font(.appBody)
                                             .foregroundColor(.appTextSecondary)
                                     }
                                     
@@ -60,9 +78,10 @@ struct HealthDashboardView: View {
                     // Exercise list based on category
                     ScrollView {
                         VStack(spacing: 12) {
-                            ForEach(viewModel.getFilteredExercises()) { exercise in
+                            ForEach(Array(viewModel.getFilteredExercises().enumerated()), id: \.element.id) { index, exercise in
                                 NavigationLink(destination: ExerciseDetailView(exercise: exercise)) {
                                     ExerciseCard(exercise: exercise)
+                                        .staggeredAppearance(index: index, total: viewModel.getFilteredExercises().count)
                                 }
                                 .buttonStyle(PlainButtonStyle())
                             }
@@ -80,32 +99,52 @@ struct ExerciseCard: View {
     let exercise: Exercise
     
     var body: some View {
-        InfoCard {
-            HStack(spacing: 15) {
-                Image(systemName: exercise.iconName)
-                    .font(.title)
-                    .foregroundColor(exercise.category.color)
-                    .frame(width: 50, height: 50)
-                    .background(exercise.category.color.opacity(0.1))
-                    .cornerRadius(10)
+        GlassCard {
+            HStack(spacing: 16) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(
+                            LinearGradient(
+                                colors: [exercise.category.color.opacity(0.3), exercise.category.color.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 60, height: 60)
+                    
+                    Image(systemName: exercise.iconName)
+                        .font(.title2)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [exercise.category.color, exercise.category.color.opacity(0.7)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                }
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 6) {
                     Text(exercise.name)
                         .font(.appHeadline)
                         .foregroundColor(.appText)
                     
-                    Text(exercise.duration)
-                        .font(.appCaption)
-                        .foregroundColor(exercise.category.color)
+                    HStack(spacing: 4) {
+                        Image(systemName: "clock")
+                            .font(.caption)
+                        Text(exercise.duration)
+                            .font(.appBody)
+                    }
+                    .foregroundColor(.appTextSecondary)
                 }
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.appTextSecondary)
             }
         }
+        .bounceEffect()
     }
 }
 

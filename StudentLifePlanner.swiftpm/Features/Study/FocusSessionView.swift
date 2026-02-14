@@ -64,7 +64,7 @@ struct FocusSessionView: View {
                                     
                                     Spacer()
                                     
-                                    Image(systemName: "checkmarkSeal.fill")
+                                    Image(systemName: "checkmark.seal.fill")
                                         .foregroundColor(.appSuccess)
                                 }
                             }

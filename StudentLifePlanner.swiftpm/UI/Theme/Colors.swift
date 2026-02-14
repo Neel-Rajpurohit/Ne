@@ -2,6 +2,7 @@ import SwiftUI
 import Foundation
 
 extension Color {
+    // Primary Colors - Enhanced vibrant palette
     static let appPrimary = Color(hex: "007AFF") // Modern Blue
     static let appSecondary = Color(hex: "5856D6") // Purple
     static let appBackground = Color(hex: "F2F2F7") // Light Gray
@@ -12,6 +13,27 @@ extension Color {
     static let appSuccess = Color(hex: "34C759") // Green
     static let appWarning = Color(hex: "FF9500") // Orange
     static let appError = Color(hex: "FF3B30") // Red
+    
+    // Gradient Colors
+    static let gradientPrimary1 = Color(hex: "667eea")
+    static let gradientPrimary2 = Color(hex: "764ba2")
+    
+    static let gradientAccent1 = Color(hex: "f093fb")
+    static let gradientAccent2 = Color(hex: "f5576c")
+    
+    static let gradientSuccess1 = Color(hex: "4facfe")
+    static let gradientSuccess2 = Color(hex: "00f2fe")
+    
+    static let gradientWarning1 = Color(hex: "fa709a")
+    static let gradientWarning2 = Color(hex: "fee140")
+    
+    static let gradientCool1 = Color(hex: "a8edea")
+    static let gradientCool2 = Color(hex: "fed6e3")
+    
+    // Glassmorphism Colors
+    static let glassFrost = Color.white.opacity(0.2)
+    static let glassBorder = Color.white.opacity(0.3)
+    static let glassBackground = Color.white.opacity(0.1)
     
     // Category colors
     static let categoryStudy = Color(hex: "007AFF") // Blue

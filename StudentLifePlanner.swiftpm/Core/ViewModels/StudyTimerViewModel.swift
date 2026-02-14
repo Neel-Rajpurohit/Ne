@@ -7,6 +7,7 @@ class StudyTimerViewModel: ObservableObject {
     @Published var currentState: TimerState = .idle
     @Published var sessionsCompleted: Int = 0
     @Published var totalFocusTime: Int = 0 // in seconds
+    private var wasFocusBeforePause = true
     
     private var timer: Timer?
     private let storage: DataStorageService
@@ -24,7 +25,14 @@ class StudyTimerViewModel: ObservableObject {
     }
     
     var progress: Double {
-        let total = isFocusMode ? Constants.focusDuration : Constants.breakDuration
+        let inFocus: Bool
+        if currentState == .paused {
+            inFocus = wasFocusBeforePause
+        } else {
+            inFocus = isFocusMode
+        }
+        let total = inFocus ? Constants.focusDuration : Constants.breakDuration
+        guard total > 0 else { return 0 }
         return Double(timeRemaining) / Double(total)
     }
     
@@ -40,7 +48,7 @@ class StudyTimerViewModel: ObservableObject {
     }
     
     
-    nonisolated init() {
+    init() {
         self.storage = DataStorageService.shared
     }
     
@@ -51,14 +59,15 @@ class StudyTimerViewModel: ObservableObject {
             currentState = .focus
             timeRemaining = Constants.focusDuration
         } else if currentState == .paused {
-            // Resume
-            currentState = isFocusMode ? .focus : .break_time
+            // Resume to the state before pause
+            currentState = wasFocusBeforePause ? .focus : .break_time
         }
         
         startCountdown()
     }
     
     func pauseTimer() {
+        wasFocusBeforePause = (currentState == .focus)
         currentState = .paused
         stopCountdown()
     }

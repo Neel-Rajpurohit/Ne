@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ProgressView: View {
+struct StudentProgressView: View {
     @StateObject var viewModel = ProgressViewModel()
     
     var body: some View {
@@ -14,7 +14,7 @@ struct ProgressView: View {
                             Text("Your Progress")
                                 .font(.appHeadline)
                             
-                            ProgressRing(progress: viewModel.progressPercentage, color: .appPrimary, size: 200)
+                            ProgressRing(progress: viewModel.progressPercentage, gradient: LinearGradient(colors: [.appPrimary, .appSecondary], startPoint: .topLeading, endPoint: .bottomTrailing), size: 200)
                             
                             VStack(spacing: 5) {
                                 Text("\(viewModel.totalPoints) Points")

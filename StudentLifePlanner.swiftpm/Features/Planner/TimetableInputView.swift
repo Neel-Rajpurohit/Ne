@@ -114,28 +114,93 @@ struct AddTimeSlotSheet: View {
     @ObservedObject var viewModel: TimetableViewModel
     @Binding var isPresented: Bool
     
+    @State private var selectedSection: ScheduleSection = .school
     @State private var subject = ""
-    @State private var location = ""
+    @State private var schoolType: String = "School"
     @State private var startTime = Date()
     @State private var endTime = Date()
+    @State private var showError = false
+    @State private var errorMessage = ""
+    
+    enum ScheduleSection: String, CaseIterable {
+        case school = "School/College"
+        case tuition = "Tuition/Classes"
+    }
     
     var body: some View {
         NavigationView {
             Form {
-                Section("Details") {
-                    TextField("Subject/Class Name", text: $subject)
+                // Section Selector
+                Section {
+                    Picker("Schedule Type", selection: $selectedSection) {
+                        ForEach(ScheduleSection.allCases, id: \.self) { section in
+                            Text(section.rawValue).tag(section)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                }
+                
+                // School/College Section
+                if selectedSection == .school {
+                    Section(header: Text("School/College Details")) {
+                        Picker("Institution Type", selection: $schoolType) {
+                            Text("School").tag("School")
+                            Text("College").tag("College")
+                        }
+                        
+                        TextField("Subject/Class Name", text: $subject)
+                            .autocapitalization(.words)
+                    }
                     
-                    Picker("Location", selection: $location) {
-                        Text("School").tag("School")
-                        Text("College").tag("College")
-                        Text("Tuition").tag("Tuition")
-                        Text("Other").tag("Other")
+                    Section(header: Text("School/College Timing")) {
+                        DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
+                        DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
+                        
+                        // Show duration
+                        if endTime > startTime {
+                            HStack {
+                                Text("Duration")
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(formatDuration())
+                                    .foregroundColor(.appPrimary)
+                            }
+                        }
                     }
                 }
                 
-                Section("Timing") {
-                    DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
-                    DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
+                // Tuition/Classes Section
+                if selectedSection == .tuition {
+                    Section(header: Text("Tuition/Classes Details")) {
+                        TextField("Subject/Class Name", text: $subject)
+                            .autocapitalization(.words)
+                        
+                        TextField("Tuition Center (Optional)", text: .constant(""))
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Section(header: Text("Tuition Timing")) {
+                        DatePicker("Start Time", selection: $startTime, displayedComponents: .hourAndMinute)
+                        DatePicker("End Time", selection: $endTime, displayedComponents: .hourAndMinute)
+                        
+                        // Show duration
+                        if endTime > startTime {
+                            HStack {
+                                Text("Duration")
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(formatDuration())
+                                    .foregroundColor(.appPrimary)
+                            }
+                        }
+                    }
+                }
+                
+                // Instructions
+                Section {
+                    Text("Tap Save to add this time slot to your timetable. The app will check for conflicts automatically.")
+                        .font(.appCaption)
+                        .foregroundColor(.appTextSecondary)
                 }
             }
             .navigationTitle("Add Time Slot")
@@ -149,18 +214,76 @@ struct AddTimeSlotSheet: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        viewModel.addTimeSlot(
-                            day: viewModel.selectedDay,
-                            startTime: startTime,
-                            endTime: endTime,
-                            subject: subject,
-                            location: location
-                        )
-                        isPresented = false
+                        saveTimeSlot()
                     }
-                    .disabled(subject.isEmpty || location.isEmpty)
+                    .disabled(!isValid())
                 }
             }
+            .alert("Invalid Entry", isPresented: $showError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage)
+            }
         }
+    }
+    
+    private func isValid() -> Bool {
+        return !subject.isEmpty && endTime > startTime
+    }
+    
+    private func saveTimeSlot() {
+        // Validate
+        guard endTime > startTime else {
+            errorMessage = "End time must be after start time"
+            showError = true
+            return
+        }
+        
+        guard !subject.isEmpty else {
+            errorMessage = "Please enter a subject name"
+            showError = true
+            return
+        }
+        
+        // Determine location based on section
+        let location: String
+        if selectedSection == .school {
+            location = schoolType
+        } else {
+            location = "Tuition"
+        }
+        
+        // Add the time slot
+        viewModel.addTimeSlot(
+            day: viewModel.selectedDay,
+            startTime: startTime,
+            endTime: endTime,
+            subject: subject,
+            location: location
+        )
+        
+        // Check if there was a conflict
+        if viewModel.hasConflicts {
+            errorMessage = viewModel.errorMessage
+            showError = true
+        } else {
+            isPresented = false
+        }
+    }
+    
+    private func formatDuration() -> String {
+        let duration = endTime.timeIntervalSince(startTime)
+        let hours = Int(duration) / 3600
+        let minutes = (Int(duration) % 3600) / 60
+        
+        if hours > 0 {
+            if minutes > 0 {
+                return "\(hours)h \(minutes)m"
+            }
+            return "\(hours)h"
+        } else if minutes > 0 {
+            return "\(minutes)m"
+        }
+        return ""
     }
 }
