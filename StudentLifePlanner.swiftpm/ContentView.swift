@@ -1,21 +1,24 @@
 import SwiftUI
-import Foundation
 
 struct ContentView: View {
-    @AppStorage("user_profile") var userProfileData: Data?
+    @AppStorage("isOnboardingComplete") var isOnboardingComplete: Bool = false
+    @AppStorage("hasSeenIntro") var hasSeenIntro: Bool = false
     
     var body: some View {
-        Group {
-            if let data = userProfileData,
-               let profile = try? JSONDecoder().decode(StudentProfile.self, from: data),
-               profile.isOnboardingComplete {
-                MainDashboardView()
-                    .transition(.opacity)
-            } else {
-                WelcomeView()
-                    .transition(.opacity)
-            }
+        if isOnboardingComplete {
+            MainTabView()
+        } else if !hasSeenIntro {
+            IntroductionContainerView(onFinish: {
+                withAnimation {
+                    hasSeenIntro = true
+                }
+            })
+        } else {
+            WelcomeView()
         }
-        .animation(.default, value: userProfileData)
     }
+}
+
+#Preview {
+    ContentView()
 }

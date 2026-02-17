@@ -40,4 +40,8 @@ struct Constants {
     static let minStudySessionMinutes = 30
     static let maxStudySessionMinutes = 120
     static let breakIntervalMinutes = 90
+    
+    // Academic Buffers
+    static let prepBufferMinutes = 60
+    static let restBufferMinutes = 30
 }
