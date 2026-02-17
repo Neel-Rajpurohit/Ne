@@ -63,29 +63,58 @@ struct HomeView: View {
                             .padding(.horizontal)
                         }
                         
-                        // Upcoming Task
+                        // Upcoming Task or Game Suggestion
                         if let nextTask = viewModel.dailyPlan?.activities.first(where: { !$0.isCompleted && $0.startTime > Date() }) {
                             VStack(alignment: .leading, spacing: 10) {
-                                Text("Next Up")
+                                Text(nextTask.type == .game ? "Want a Refresh?" : "Next Up")
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .padding(.horizontal)
                                 
-                                InfoCard {
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text(nextTask.title)
-                                                .font(.headline)
-                                            Text("\(DateHelper.shared.formatTime(nextTask.startTime)) - \(DateHelper.shared.formatTime(nextTask.endTime))")
-                                                .font(.caption)
+                                if nextTask.type == .game {
+                                    NavigationLink(destination: GameMenuView()) {
+                                        InfoCard {
+                                            HStack(spacing: 15) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(AppColors.accent.opacity(0.2))
+                                                        .frame(width: 50, height: 50)
+                                                    Image(systemName: "gamecontroller.fill")
+                                                        .foregroundColor(AppColors.accent)
+                                                }
+                                                
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    Text("Play a 5-minute Mind Game?")
+                                                        .font(.headline)
+                                                        .foregroundColor(.primary)
+                                                    Text("Refresh your brain before the next session")
+                                                        .font(.caption)
+                                                        .foregroundColor(.secondary)
+                                                }
+                                                Spacer()
+                                                Image(systemName: "chevron.right")
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        }
+                                    }
+                                    .padding(.horizontal)
+                                } else {
+                                    InfoCard {
+                                        HStack {
+                                            VStack(alignment: .leading) {
+                                                Text(nextTask.title)
+                                                    .font(.headline)
+                                                Text("\(DateHelper.shared.formatTime(nextTask.startTime)) - \(DateHelper.shared.formatTime(nextTask.endTime))")
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            Spacer()
+                                            Image(systemName: "chevron.right")
                                                 .foregroundColor(.secondary)
                                         }
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                            .foregroundColor(.secondary)
                                     }
+                                    .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
                             }
                         }
                         

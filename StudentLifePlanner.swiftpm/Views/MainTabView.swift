@@ -19,6 +19,11 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Health", systemImage: "heart.fill")
                 }
+            
+            GameMenuView(showBackButton: false)
+                .tabItem {
+                    Label("Games", systemImage: "gamecontroller.fill")
+                }
         }
     }
 }

@@ -72,35 +72,20 @@ class PlannerGeneratorService {
     }
     
     private func fillGap(from start: Date, to end: Date, into list: inout [Activity]) {
-        let duration = end.timeIntervalSince(start)
-        let minutes = Int(duration / 60)
+        let duration = end.timeIntervalSince(start) / 60
         
-        var current = start
-        
-        if minutes >= 30 {
-            // If gap is large, add a mix
-            if minutes >= 60 {
-                // Add Exercise/Yoga if it's the first gap or morning
-                list.append(Activity(title: "Wellness Session", startTime: current, endTime: calendar.date(byAdding: .minute, value: 30, to: current)!, type: .exercise))
-                current = calendar.date(byAdding: .minute, value: 30, to: current)!
-            }
-            
-            // Add Study Sessions in remaining time
-            while current < end {
-                let remaining = Int(end.timeIntervalSince(current) / 60)
-                if remaining >= 30 {
-                    list.append(Activity(title: "Deep Study", startTime: current, endTime: calendar.date(byAdding: .minute, value: 25, to: current)!, type: .study))
-                    current = calendar.date(byAdding: .minute, value: 25, to: current)!
-                    
-                    list.append(Activity(title: "Short Break", startTime: current, endTime: calendar.date(byAdding: .minute, value: 5, to: current)!, type: .rest))
-                    current = calendar.date(byAdding: .minute, value: 5, to: current)!
-                } else {
-                    list.append(Activity(title: "Rest/Breathing", startTime: current, endTime: end, type: .breathing))
-                    current = end
-                }
-            }
-        } else if minutes > 0 {
-            list.append(Activity(title: "Rest", startTime: start, endTime: end, type: .rest))
+        if duration >= 5 && duration <= 15 {
+            // Short Gap: Suggest Game
+            list.append(Activity(title: "Mind Game 🎮", startTime: start, endTime: end, type: .game))
+        } else if duration >= 60 {
+            // Long Gap: Study
+            list.append(Activity(title: "Focused Study", startTime: start, endTime: end, type: .study))
+        } else if duration >= 30 {
+            // Medium Gap: Exercise/Yoga
+            list.append(Activity(title: "Quick Wellness", startTime: start, endTime: end, type: .exercise))
+        } else if duration > 0 {
+            // Very Short Gap: Rest
+            list.append(Activity(title: "Quick Rest", startTime: start, endTime: end, type: .rest))
         }
     }
     

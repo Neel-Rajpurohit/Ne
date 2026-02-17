@@ -18,5 +18,6 @@ struct Activity: Codable, Identifiable {
         case school = "School/College"
         case tuition = "Tuition"
         case extraClass = "Extra Class"
+        case game = "Mind Game"
     }
 }

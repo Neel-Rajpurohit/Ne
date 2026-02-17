@@ -87,6 +87,7 @@ struct ActivityDetailView: View {
         case .exercise: return "figure.cross.training"
         case .yoga: return "figure.yoga"
         case .breathing: return "wind"
+        case .game: return "gamecontroller.fill"
         default: return "calendar"
         }
     }
@@ -97,6 +98,7 @@ struct ActivityDetailView: View {
         case .exercise: return "Keep your body moving. Consistency is key to long-term health."
         case .yoga: return "Connect with your breath and improve flexibility."
         case .breathing: return "Take a moment to center yourself and reduce stress."
+        case .game: return "A 5-minute mind game to refresh your brain and boost productivity."
         default: return "Attend your scheduled session and stay engaged."
         }
     }

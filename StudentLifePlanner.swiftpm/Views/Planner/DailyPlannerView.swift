@@ -97,6 +97,8 @@ struct ActivityRow: View {
         case .breathing: return .cyan
         case .rest: return .orange
         case .school, .tuition, .extraClass: return .purple
+        case .game: return AppColors.accent
+        @unknown default: return .gray
         }
     }
 }
