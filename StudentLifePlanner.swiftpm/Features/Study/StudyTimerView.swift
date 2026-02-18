@@ -1,76 +1,97 @@
 import SwiftUI
 
 struct StudyTimerView: View {
-    @StateObject var viewModel = StudyTimerViewModel()
+    @State private var timeRemaining = 25 * 60
+    @State private var timerRunning = false
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     var body: some View {
-        ZStack {
-            AppBackground(style: .study)
-            
-            VStack(spacing: 30) {
-                Spacer()
+        NavigationView {
+            ZStack {
+                GradientBackground()
                 
-                // Timer Display
-                TimerCircle(
-                    progress: viewModel.progress,
-                    timeString: viewModel.formattedTime,
-                    isFocusMode: viewModel.isFocusMode
-                )
-                
-                // Session info
-                Text(viewModel.sessionInfo)
-                    .font(.appTitle2)
-                    .foregroundColor(.appTextSecondary)
-                
-                Spacer()
-                
-                // Controls
-                HStack(spacing: 20) {
-                    // Reset button
-                    Button(action: {
-                        viewModel.resetTimer()
-                    }) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.title)
-                            .foregroundColor(.appPrimary)
-                            .frame(width: 60, height: 60)
-                            .background(Color.appCardBackground)
-                            .cornerRadius(30)
-                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                VStack(spacing: 40) {
+                    Text("Study Focus")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundColor(AppColors.textPrimary)
+                    
+                    ZStack {
+                        Circle()
+                            .stroke(Color.primary.opacity(0.1), lineWidth: 20)
+                            .frame(width: 250, height: 250)
+                        
+                        Circle()
+                            .trim(from: 0, to: CGFloat(timeRemaining) / CGFloat(25 * 60))
+                            .stroke(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [AppColors.primary, AppColors.secondary]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                ),
+                                style: StrokeStyle(lineWidth: 20, lineCap: .round)
+                            )
+                            .frame(width: 250, height: 250)
+                            .rotationEffect(.degrees(-90))
+                        
+                        Text(timeString(timeRemaining))
+                            .font(.system(size: 60, weight: .bold, design: .monospaced))
+                            .foregroundColor(AppColors.textPrimary)
                     }
                     
-                    // Play/Pause button
-                    Button(action: {
-                        if viewModel.isRunning {
-                            viewModel.pauseTimer()
-                        } else {
-                            viewModel.startTimer()
+                    VStack(spacing: 20) {
+                        Button(action: { timerRunning.toggle() }) {
+                            Text(timerRunning ? "Stop Session" : "Start Focus Session")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(timerRunning ? Color.red.opacity(0.8) : AppColors.primary)
+                                .cornerRadius(16)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [AppColors.accent.opacity(0.3), .clear]),
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 0.5
+                                        )
+                                )
                         }
-                    }) {
-                        Image(systemName: viewModel.isRunning ? "pause.fill" : "play.fill")
-                            .font(.title)
-                            .foregroundColor(.white)
-                            .frame(width: 80, height: 80)
-                            .background(viewModel.isFocusMode ? Color.appPrimary : Color.appSuccess)
-                            .cornerRadius(40)
-                            .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 4)
+                        .padding(.horizontal, 40)
+                        
+                        Button(action: {
+                            timeRemaining = 25 * 60
+                            timerRunning = false
+                        }) {
+                            Label("Reset Timer", systemImage: "arrow.clockwise")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        }
                     }
                     
-                    // Info button (navigate to sessions)
-                    NavigationLink(destination: FocusSessionView(viewModel: viewModel)) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.title)
-                            .foregroundColor(.appPrimary)
-                            .frame(width: 60, height: 60)
-                            .background(Color.appCardBackground)
-                            .cornerRadius(30)
-                            .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-                    }
+                    Text(timerRunning ? "Focus on your task..." : "Get ready to celebrate focus!")
+                        .foregroundColor(Color(hex: "1E293B").opacity(0.6))
+                    
+                    Spacer()
                 }
-                .padding(.bottom, 50)
+                .padding(.top, 50)
+            }
+            .navigationBarHidden(true)
+            .onReceive(timer) { _ in
+                if timerRunning && timeRemaining > 0 {
+                    timeRemaining -= 1
+                } else if timeRemaining == 0 {
+                    timerRunning = false
+                }
             }
         }
-        .navigationTitle("Study Timer")
-        .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    func timeString(_ totalSeconds: Int) -> String {
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }

@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct YogaView: View {
-    let poses = [
-        ("Mountain Pose", "Tadasana"),
-        ("Tree Pose", "Vrikshasana"),
-        ("Triangle Pose", "Trikonasana"),
-        ("Child's Pose", "Balasana")
+struct ExerciseView: View {
+    let exercises = [
+        ("Push Ups", "3 sets of 15"),
+        ("Squats", "3 sets of 20"),
+        ("Plank", "1 minute hold"),
+        ("Jumping Jacks", "2 minutes")
     ]
     
     var body: some View {
@@ -13,28 +13,28 @@ struct YogaView: View {
             GradientBackground()
             
             VStack(spacing: 20) {
-                Text("Yoga & Mindfulness")
+                Text("Daily Exercise")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
                     .foregroundColor(AppColors.textPrimary)
                 
-                Text("Hold each pose for 10-15 deep breaths.")
+                Text("Complete these to maintain your points.")
                     .foregroundColor(AppColors.textPrimary.opacity(0.7))
                 
                 ScrollView {
                     VStack(spacing: 15) {
-                        ForEach(poses, id: \.0) { pose in
+                        ForEach(exercises, id: \.0) { exercise in
                             InfoCard {
                                 HStack {
                                     VStack(alignment: .leading) {
-                                        Text(pose.0)
+                                        Text(exercise.0)
                                             .font(.headline)
-                                        Text(pose.1)
+                                        Text(exercise.1)
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                     }
                                     Spacer()
-                                    Image(systemName: "figure.yoga")
-                                        .foregroundColor(.purple)
+                                    Image(systemName: "figure.cross.training")
+                                        .foregroundColor(.green)
                                 }
                             }
                         }
@@ -43,7 +43,7 @@ struct YogaView: View {
                 }
                 
                 NavigationLink(destination: ProofUploadView(onComplete: {})) {
-                    Text("Session Done")
+                    Text("Complete & Take Photo Proof")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)

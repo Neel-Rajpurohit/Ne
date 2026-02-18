@@ -9,6 +9,15 @@ struct Activity: Codable, Identifiable {
     var isCompleted: Bool = false
     var proofImagePath: String?
     
+    var requiresVerification: Bool {
+        switch type {
+        case .rest, .school:
+            return false
+        default:
+            return true
+        }
+    }
+    
     enum ActivityType: String, Codable {
         case study = "Study"
         case exercise = "Exercise"

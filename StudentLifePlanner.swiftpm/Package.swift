@@ -19,7 +19,7 @@ let package = Package(
             bundleIdentifier: "com.swapnil.abc.StudentLifePlanner",
             displayVersion: "1.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .sandwich),
+            appIcon: .placeholder(icon: .checkmark),
             accentColor: .presetColor(.yellow),
             supportedDeviceFamilies: [
                 .pad,
