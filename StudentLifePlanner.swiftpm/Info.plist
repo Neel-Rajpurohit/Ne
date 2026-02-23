@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>NSHealthShareUsageDescription</key>
-    <string>StudentLifePlanner uses your health data to track daily steps, distance, and calories to help you maintain a balanced lifestyle.</string>
-</dict>
-</plist>
